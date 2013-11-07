@@ -1,0 +1,4 @@
+{
+	ofVersion: "0.80",
+	ofxOpenNI: "https://github.com/gameoverhack/ofxOpenNI/commit/3567e90b9886af002cf05261fbc3c03816d6c725"
+}
