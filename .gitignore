@@ -159,4 +159,8 @@ xcuserdata
 
 #####
 # Added by AH 
-bin
+bin/*
+!bin/data/
+
+bin/data/*
+!bin/data/assets/
