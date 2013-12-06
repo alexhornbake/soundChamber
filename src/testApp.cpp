@@ -35,7 +35,7 @@ void testApp::setup() {
     
     openNIDevice.start();
     
-    verdana.loadFont(ofToDataPath("verdana.ttf"), 24);
+    verdana.loadFont(ofToDataPath("assets/verdana.ttf"), 24);
 }
 
 //--------------------------------------------------------------
