@@ -3,71 +3,57 @@
 //--------------------------------------------------------------
 void testApp::setup() {
     
-    ofSetLogLevel(OF_LOG_VERBOSE);
-
-    openNIDevice.setup();
-    openNIDevice.addImageGenerator();
-    openNIDevice.addDepthGenerator();
-    openNIDevice.setRegister(true);
-    openNIDevice.setMirror(true);
+    ofSetLogLevel(OF_LOG_NOTICE);
     
-    // setup the hand generator
-    openNIDevice.addHandsGenerator();
+    numDevices = openNIDevices[0].getNumDevices();
     
-    // add all focus gestures (ie., wave, click, raise arm)
-    openNIDevice.addAllHandFocusGestures();
-    
-    // or you can add them one at a time
-    //vector<string> gestureNames = openNIDevice.getAvailableGestures(); // you can use this to get a list of gestures
-                                                                         // prints to console and/or you can use the returned vector
-    //openNIDevice.addHandFocusGesture("Wave");
-    
-    openNIDevice.setMaxNumHands(4);
-    
-    for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
-        ofxOpenNIDepthThreshold depthThreshold = ofxOpenNIDepthThreshold(0, 0, false, true, true, true, true); 
-        // ofxOpenNIDepthThreshold is overloaded, has defaults and can take a lot of different parameters, eg:
-        // (ofxOpenNIROI OR) int _nearThreshold, int _farThreshold, bool _bUsePointCloud = false, bool _bUseMaskPixels = true, 
-        // bool _bUseMaskTexture = true, bool _bUseDepthPixels = false, bool _bUseDepthTexture = false, 
-        // int _pointCloudDrawSize = 2, int _pointCloudResolution = 2
-        openNIDevice.addDepthThreshold(depthThreshold);
+    for (int deviceID = 0; deviceID < numDevices; deviceID++){
+        //openNIDevices[deviceID].setLogLevel(OF_LOG_VERBOSE); // ofxOpenNI defaults to ofLogLevel, but you can force to any level
+        openNIDevices[deviceID].setup();
+        openNIDevices[deviceID].addDepthGenerator();
+        openNIDevices[deviceID].addImageGenerator();
+        openNIDevices[deviceID].addUserGenerator();
+        openNIDevices[deviceID].setRegister(true);
+        openNIDevices[deviceID].setMirror(true);
+		openNIDevices[deviceID].start();
     }
     
-    openNIDevice.start();
+    // NB: Only one device can have a user generator at a time - this is a known bug in NITE due to a singleton issue
+    // so it's safe to assume that the fist device to ask (ie., deviceID == 0) will have the user generator...
     
+    openNIDevices[0].setMaxNumUsers(8); // defualt is 4
+    ofAddListener(openNIDevices[0].userEvent, this, &testApp::userEvent);
+    
+    ofxOpenNIUser user;
+    user.setUseMaskTexture(true);
+    user.setUsePointCloud(true);
+    user.setPointCloudDrawSize(2); // this is the size of the glPoint that will be drawn for the point cloud
+    user.setPointCloudResolution(2); // this is the step size between points for the cloud -> eg., this sets it to every second point
+    openNIDevices[0].setBaseUserClass(user); // this becomes the base class on which tracked users are created
+                                             // allows you to set all tracked user properties to the same type easily
+                                             // and allows you to create your own user class that inherits from ofxOpenNIUser
+    
+    // if you want to get fine grain control over each possible tracked user for some reason you can iterate
+    // through users like I'm doing below. Please not the use of nID = 1 AND nID <= openNIDevices[0].getMaxNumUsers()
+    // as what you're doing here is retrieving a user that is being stored in a std::map using it's XnUserID as the key
+    // that means it's not a 0 based vector, but instead starts at 1 and goes upto, and includes maxNumUsers...
+//    for (XnUserID nID = 1; nID <= openNIDevices[0].getMaxNumUsers(); nID++){
+//        ofxOpenNIUser & user = openNIDevices[0].getUser(nID);
+//        user.setUseMaskTexture(true);
+//        user.setUsePointCloud(true);
+//        //user.setUseAutoCalibration(false); // defualts to true; set to false to force pose detection
+//        //user.setLimbDetectionConfidence(0.9f); // defaults 0.3f
+//        user.setPointCloudDrawSize(2);
+//        user.setPointCloudResolution(1);
+//    }
     verdana.loadFont(ofToDataPath("assets/verdana.ttf"), 24);
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-    openNIDevice.update();
-    
-    // reset all depthThresholds to 0,0,0
-    for(int i = 0; i < openNIDevice.getMaxNumHands(); i++){
-        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i);
-        ofPoint leftBottomNearWorld = ofPoint(0,0,0);
-        ofPoint rightTopFarWorld = ofPoint(0,0,0);
-        ofxOpenNIROI roi = ofxOpenNIROI(leftBottomNearWorld, rightTopFarWorld);
-        depthThreshold.setROI(roi);
-    }
-    
-    // iterate through users
-    for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
-        
-        // get a reference to this user
-        ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
-        
-        // get hand position
-        ofPoint & handWorldPosition = hand.getWorldPosition(); // remember to use world position for setting ROIs!!!
-        
-        // set depthThresholds based on handPosition
-        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i); // we just use hand index for the depth threshold index
-        ofPoint leftBottomNearWorld = handWorldPosition - 100; // ofPoint has operator overloading so it'll subtract/add 50 to x, y, z
-        ofPoint rightTopFarWorld = handWorldPosition + 100;
-        
-        ofxOpenNIROI roi = ofxOpenNIROI(leftBottomNearWorld, rightTopFarWorld);
-        depthThreshold.setROI(roi);
-        
+    ofBackground(0, 0, 0);
+    for (int deviceID = 0; deviceID < numDevices; deviceID++){
+        openNIDevices[deviceID].update();
     }
 }
 
@@ -76,73 +62,99 @@ void testApp::draw(){
 	ofSetColor(255, 255, 255);
     
     ofPushMatrix();
-    // draw debug (ie., image, depth, skeleton)
-    openNIDevice.drawDebug();
-    ofPopMatrix();
     
-    ofPushMatrix();
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-    
-    // iterate through users
-    for (int i = 0; i < openNIDevice.getNumTrackedHands(); i++){
-        
-        // get a reference to this user
-        ofxOpenNIHand & hand = openNIDevice.getTrackedHand(i);
-        
-        // get hand position
-        ofPoint & handPosition = hand.getPosition();
-        
-        // draw a rect at the position
-        ofSetColor(255,0,0);
-        ofRect(handPosition.x, handPosition.y, 2, 2);
-        
-        // set depthThresholds based on handPosition
-        ofxOpenNIDepthThreshold & depthThreshold = openNIDevice.getDepthThreshold(i); // we just use hand index for the depth threshold index
-        
-        // draw ROI over the depth image
-        ofSetColor(255,255,255);
-        depthThreshold.drawROI();
-        
-        // draw depth and mask textures below the depth image at 0.5 scale
-        // you could instead just do pixel maths here for finger tracking etc
-        // by using depthThreshold.getDepthPixels() and/or depthThreshold.getMaskPixels()
-        // and turn off the textures in the initial setup/addDepthTexture calls
-        
-        ofPushMatrix();
-        ofTranslate(320 * i, 480);
-        ofScale(0.5, 0.5);
-        depthThreshold.drawDepth();
-        depthThreshold.drawMask();
-        ofPopMatrix();
-        
-        // i think this is pretty good but might be a frame behind???
+    for (int deviceID = 0; deviceID < numDevices; deviceID++){
+        ofTranslate(0, deviceID * 480);
+        openNIDevices[deviceID].drawDebug(); // debug draw does the equicalent of the commented methods below
+//        openNIDevices[deviceID].drawDepth(0, 0, 640, 480);
+//        openNIDevices[deviceID].drawImage(640, 0, 640, 480);
+//        openNIDevices[deviceID].drawSkeletons(640, 0, 640, 480);
         
     }
-    
+
+    // do some drawing of user clouds and masks
+    ofPushMatrix();
+    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+    int numUsers = openNIDevices[0].getNumTrackedUsers();
+    for (int nID = 0; nID < numUsers; nID++){
+        ofxOpenNIUser & user = openNIDevices[0].getTrackedUser(nID);
+        user.drawMask();
+        ofPushMatrix();
+        ofTranslate(320, 240, -1000);
+        user.drawPointCloud();
+        ofPopMatrix();
+    }
     ofDisableBlendMode();
     ofPopMatrix();
     
-    // draw some info regarding frame counts etc
 	ofSetColor(0, 255, 0);
-	string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
-    
-	verdana.drawString(msg, 20, 480 - 20);
+	string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate());
+	verdana.drawString(msg, 20, numDevices * 480 + 26);
 }
 
 //--------------------------------------------------------------
-void testApp::handEvent(ofxOpenNIHandEvent & event){
-    // show hand event messages in the console
-    ofLogNotice() << getHandStatusAsString(event.handStatus) << "for hand" << event.id << "from device" << event.deviceID;
+void testApp::userEvent(ofxOpenNIUserEvent & event){
+    ofLogNotice() << getUserStatusAsString(event.userStatus) << "for user" << event.id << "from device" << event.deviceID;
 }
 
 //--------------------------------------------------------------
 void testApp::exit(){
-    openNIDevice.stop();
+    // this often does not work -> it's a known bug -> but calling it on a key press or anywhere that isnt std::aexit() works
+    // press 'x' to shutdown cleanly...
+    for (int deviceID = 0; deviceID < numDevices; deviceID++){
+        openNIDevices[deviceID].stop();
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-
+    int cloudRes = -1;
+    switch (key) {
+        case '1':
+            cloudRes = 1;
+            break;
+        case '2':
+            cloudRes = 2;
+            break;
+        case '3':
+            cloudRes = 3;
+            break;
+        case '4':
+            cloudRes = 4;
+            break;
+        case '5':
+            cloudRes = 5;
+            break;
+        case 'x':
+            for (int deviceID = 0; deviceID < numDevices; deviceID++){
+                openNIDevices[deviceID].stop();
+            }
+            break;
+        case 'i':
+            for (int deviceID = 0; deviceID < numDevices; deviceID++){
+                if (openNIDevices[deviceID].isImageOn()){
+                    openNIDevices[deviceID].removeImageGenerator();
+                    openNIDevices[deviceID].addInfraGenerator();
+                    continue;
+                }
+                if (openNIDevices[deviceID].isInfraOn()){
+                    openNIDevices[deviceID].removeInfraGenerator();
+                    openNIDevices[deviceID].addImageGenerator();
+                    continue;
+                }
+            }
+            break;
+        case 'b':
+            for (int deviceID = 0; deviceID < numDevices; deviceID++){
+                openNIDevices[deviceID].setUseBackBuffer(!openNIDevices[deviceID].getUseBackBuffer());
+            }
+            break;
+        default:
+            break;
+    }
+    for (int deviceID = 0; deviceID < numDevices; deviceID++){
+		openNIDevices[deviceID].setPointCloudResolutionAllUsers(cloudRes);
+	}
 }
 
 //--------------------------------------------------------------
@@ -174,3 +186,4 @@ void testApp::mouseReleased(int x, int y, int button){
 void testApp::windowResized(int w, int h){
 
 }
+
