@@ -15,8 +15,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
                BuildableName = "example-user-tracker.app"
-               BlueprintName = "example-user-tracker"
-               ReferencedContainer = "container:example-user-tracker.xcodeproj">
+               BlueprintName = "soundChamber"
+               ReferencedContainer = "container:soundChamber.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,8 +33,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
             BuildableName = "example-user-tracker.app"
-            BlueprintName = "example-user-tracker"
-            ReferencedContainer = "container:example-user-tracker.xcodeproj">
+            BlueprintName = "soundChamber"
+            ReferencedContainer = "container:soundChamber.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -52,8 +52,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
             BuildableName = "example-user-tracker.app"
-            BlueprintName = "example-user-tracker"
-            ReferencedContainer = "container:example-user-tracker.xcodeproj">
+            BlueprintName = "soundChamber"
+            ReferencedContainer = "container:soundChamber.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -70,8 +70,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
             BuildableName = "example-user-tracker.app"
-            BlueprintName = "example-user-tracker"
-            ReferencedContainer = "container:example-user-tracker.xcodeproj">
+            BlueprintName = "soundChamber"
+            ReferencedContainer = "container:soundChamber.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
