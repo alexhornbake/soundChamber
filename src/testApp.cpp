@@ -29,6 +29,26 @@ void testApp::exit()
 void testApp::update()
 {
 	device.update();
+	for (int i = 0; i < tracker.getNumUser(); i++)
+	{
+		ofxNiTE2::User::Ref user = tracker.getUser(i);
+		const ofxNiTE2::Joint &leftHand  = user->getJoint(nite::JOINT_LEFT_HAND);
+		const ofxNiTE2::Joint &rightHand = user->getJoint(nite::JOINT_RIGHT_HAND);
+        //cout << "\nleft: [" << leftHand.getX() << " " << leftHand.getY() << " " << leftHand.getZ() << "]";
+        //cout << "\nright: [" << rightHand.getX() << " " << rightHand.getY() << " " << rightHand.getZ() << "]";
+        
+        //cout << "\n" << i << ": " << leftHand.getX();
+        
+        
+        
+        
+		//ofVec3f centerOfMass = user->getCenterOfMass();
+        //cout << "\n" << centerOfMass;
+        
+        
+		ofVec3f centerOfBone = user->getCenterOfBone();
+        cout << "\n" << centerOfBone;
+    }
 }
 
 //--------------------------------------------------------------
