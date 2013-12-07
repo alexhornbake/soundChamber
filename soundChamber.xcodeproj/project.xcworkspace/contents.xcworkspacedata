@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:kinect_SC2.xcodeproj">
+      location = "self:soundChamber.xcodeproj">
    </FileRef>
 </Workspace>
