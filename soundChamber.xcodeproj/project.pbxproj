@@ -494,8 +494,6 @@
 /* Begin PBXProject section */
 		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
 			isa = PBXProject;
-			attributes = {
-			};
 			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "soundChamber" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
@@ -745,7 +743,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_9 = "\"$(SRCROOT)/../../../addons/ofxNI2/libs/OpenNI2/lib/osx\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = soundChamberDebug;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx10.7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -864,7 +862,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_9 = "\"$(SRCROOT)/../../../addons/ofxNI2/libs/OpenNI2/lib/osx\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = soundChamber;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx10.7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

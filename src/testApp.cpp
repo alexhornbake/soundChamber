@@ -32,23 +32,57 @@ void testApp::update()
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
-		const ofxNiTE2::Joint &leftHand  = user->getJoint(nite::JOINT_LEFT_HAND);
-		const ofxNiTE2::Joint &rightHand = user->getJoint(nite::JOINT_RIGHT_HAND);
-        //cout << "\nleft: [" << leftHand.getX() << " " << leftHand.getY() << " " << leftHand.getZ() << "]";
-        //cout << "\nright: [" << rightHand.getX() << " " << rightHand.getY() << " " << rightHand.getZ() << "]";
-        
-        //cout << "\n" << i << ": " << leftHand.getX();
         
         
+		//ofVec3f centerOfBone = user->getCenterOfBone();
+        //cout << "\n" << centerOfBone;
         
-        
-		//ofVec3f centerOfMass = user->getCenterOfMass();
-        //cout << "\n" << centerOfMass;
-        
-        
-		ofVec3f centerOfBone = user->getCenterOfBone();
-        cout << "\n" << centerOfBone;
+        float distanceBetweenHands = getDistanceBetweenHands(user);
+        float handHeightsAvg = getHandHeightsAvg(user);
+        float distanceFromSensor = getDistanceFromSensor(user);
     }
+}
+
+
+float testApp::getDistanceBetweenHands(ofxNiTE2::User::Ref user)
+{
+    const ofxNiTE2::Joint &leftHand  = user->getJoint(nite::JOINT_LEFT_HAND);
+    const ofxNiTE2::Joint &rightHand = user->getJoint(nite::JOINT_RIGHT_HAND);
+    
+    ofVec3f lPoint = leftHand.getGlobalPosition();
+    ofVec3f rPoint = rightHand.getGlobalPosition();
+    
+    return ofMap(lPoint.distance(rPoint),100,1500,0,1,true);
+}
+
+float testApp::getHandHeightsAvg(ofxNiTE2::User::Ref user)
+{
+    const ofxNiTE2::Joint &leftHand  = user->getJoint(nite::JOINT_LEFT_HAND);
+    const ofxNiTE2::Joint &rightHand = user->getJoint(nite::JOINT_RIGHT_HAND);
+    
+    float lPoint = leftHand.getGlobalPosition().y;
+    float rPoint = rightHand.getGlobalPosition().y;
+    
+    //cout << "\nleft hand height: " << lPoint;
+    //cout << "\nright hand height: " << rPoint;
+    
+    lPoint = ofMap(lPoint,-1000,725,0,1,true);
+    rPoint = ofMap(rPoint,-1000,725,0,1,true);
+    float result = (lPoint + rPoint) * 0.5;
+    
+    //cout << "\nresult: " << result;
+    
+    return result;
+}
+
+float testApp::getDistanceFromSensor(ofxNiTE2::User::Ref user)
+{
+    
+    float centerOfBoneZ = user->getCenterOfBone().z;
+    centerOfBoneZ = ofMap(centerOfBoneZ,-700,-4000,0,1,true);
+    
+    cout << "\n" << centerOfBoneZ;
+    return centerOfBoneZ;
 }
 
 //--------------------------------------------------------------

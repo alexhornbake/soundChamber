@@ -26,4 +26,11 @@ public:
 	
 	ofxNI2::Device device;
 	ofxNiTE2::UserTracker tracker;
+
+private:
+    
+    float getDistanceBetweenHands(ofxNiTE2::User::Ref user);
+    float getHandHeightsAvg(ofxNiTE2::User::Ref user);
+    float getDistanceFromSensor(ofxNiTE2::User::Ref user);
+    
 };
