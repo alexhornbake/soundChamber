@@ -19,8 +19,9 @@ void testApp::setup()
 	if (tracker.setup(device))
 	{
 		cout << "tracker inited" << endl;
+        tracker.setSkeletonSmoothingFactor(0.7);
 	}
-    tracker.setSkeletonSmoothingFactor(0.7);
+    
 }
 
 void testApp::exit()
@@ -44,13 +45,15 @@ void testApp::update()
         sendOscMessage(i, "distancebetweenhands", distanceBetweenHands);
         sendOscMessage(i, "handheightavg", handHeightsAvg);
         sendOscMessage(i, "distancefromsensor", distanceFromSensor);
+
     }
 }
 
 void testApp::sendOscMessage(int id, string argName, float value){
     ofxOscMessage m;
-	m.setAddress(ofToString(MSG_PREFIX) + "/" + ofToString(id) + "/" +  argName);
-	m.addFloatArg(value);
+	m.setAddress(ofToString(MSG_PREFIX) + "/" +  argName);
+	m.addIntArg(id);
+    m.addFloatArg(value);
 	oscSender.sendMessage(m);
 }
 

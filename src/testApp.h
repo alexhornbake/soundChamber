@@ -8,8 +8,8 @@
 #include "ofxOsc.h"
 
 #define HOST "localhost"
-#define PORT 12345
-#define MSG_PREFIX "soundchamber"
+#define PORT 57121
+#define MSG_PREFIX "/soundchamber"
 
 class testApp : public ofBaseApp
 {
