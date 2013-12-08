@@ -43,7 +43,7 @@ void testApp::update()
         float distanceFromSensor = getDistanceFromSensor(user);
         
         sendOscMessage(i, "distancebetweenhands", distanceBetweenHands);
-        sendOscMessage(i, "handheightavg", handHeightsAvg);
+        sendOscMessage(i, "handheightsavg", handHeightsAvg);
         sendOscMessage(i, "distancefromsensor", distanceFromSensor);
 
     }
