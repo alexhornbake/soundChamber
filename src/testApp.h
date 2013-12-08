@@ -5,6 +5,12 @@
 #include "ofxNI2.h"
 #include "ofxNiTE2.h"
 
+#include "ofxOsc.h"
+
+#define HOST "localhost"
+#define PORT 12345
+#define MSG_PREFIX "soundchamber"
+
 class testApp : public ofBaseApp
 {
 public:
@@ -32,5 +38,7 @@ private:
     float getDistanceBetweenHands(ofxNiTE2::User::Ref user);
     float getHandHeightsAvg(ofxNiTE2::User::Ref user);
     float getDistanceFromSensor(ofxNiTE2::User::Ref user);
-    
+
+    ofxOscSender oscSender;
+    void sendOscMessage(int id, string argName, float value);
 };

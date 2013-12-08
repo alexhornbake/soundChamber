@@ -9,7 +9,11 @@ void testApp::setup()
 	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
 	ofBackground(0);
+    
+    //Setup OSC sender
+    oscSender.setup(HOST, PORT);
 	
+    //Setup Kinect
 	device.setup();
 	
 	if (tracker.setup(device))
@@ -33,14 +37,21 @@ void testApp::update()
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
         
-        
-		//ofVec3f centerOfBone = user->getCenterOfBone();
-        //cout << "\n" << centerOfBone;
-        
         float distanceBetweenHands = getDistanceBetweenHands(user);
         float handHeightsAvg = getHandHeightsAvg(user);
         float distanceFromSensor = getDistanceFromSensor(user);
+        
+        sendOscMessage(i, "distancebetweenhands", distanceBetweenHands);
+        sendOscMessage(i, "handheightavg", handHeightsAvg);
+        sendOscMessage(i, "distancefromsensor", distanceFromSensor);
     }
+}
+
+void testApp::sendOscMessage(int id, string argName, float value){
+    ofxOscMessage m;
+	m.setAddress(ofToString(MSG_PREFIX) + "/" + ofToString(id) + "/" +  argName);
+	m.addFloatArg(value);
+	oscSender.sendMessage(m);
 }
 
 
