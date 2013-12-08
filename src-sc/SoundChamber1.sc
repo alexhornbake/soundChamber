@@ -1,13 +1,15 @@
 (
-  ~netAddr = NetAddr("127.0.0.1", NetAddr.langPort);
-  ~matcher = "/soundchamber";
+  ~port = 57121;
+  ~netAddr = NetAddr("127.0.0.1", ~port);
+  ~matcher = "/soundchamber/distancebetweenhands";
 
   OSCFunc.newMatching(
     path: ~matcher,
-    srcID: ~netAddr,
+    recvPort: ~port,
     func: {
       arg msg, time, addr, recvPort;
-      ("-->" + msg[1]).postln;
+      ("--> User ID: " + msg[1]).postln;
+      ("--> Value: " + msg[2]).postln;
     },
   );
 
