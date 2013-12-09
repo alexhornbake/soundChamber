@@ -1,0 +1,5 @@
+RESOURCES
+=========
+
+Perform actions only *after* a SnythDef has loaded to the server
+http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/Server-sync-wait-for-synthdef-to-load-td6577298.html

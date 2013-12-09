@@ -1,40 +1,44 @@
 (
-var port = 57121;
-var appName = "/soundchamber";
-var responder1, responder2, responder3;
+    ~port = 57121;
+    ~appName = "/soundchamber";
 
-var oscFunc = {|matcher, port, func|
-	OSCFunc.newMatching(
-		path: matcher,
-		recvPort: port,
-		func: func,
-	);
-};
+    //Synth factory function definition
+    ~oscSynthFactory = { |sender, func|
 
-responder1 = "/distancebetweenhands";
-oscFunc.value(matcher: appName ++ responder1, port: port,
-	func: {|msg|
-		//Respond to incoming message here!
-		(responder1 + "--> User ID: " ++ msg[1]).postln;
-		(responder1 + "--> Value: " ++ msg[2]).postln;
-	}
-);
+        //New control bus
+        var bus = Bus.control(s);
+        bus.set(0);
 
-responder2 = "/handheightsavg";
-oscFunc.value(matcher: appName ++ responder2, port: port,
-	func: {|msg|
-		//Respond to incoming message here!
-		(responder2 + "--> User ID: " ++ msg[1]).postln;
-		(responder2 + "--> Value: " ++ msg[2]).postln;
-	}
-);
+        //New synth with given SynthDef; map in the control bus
+        {
+            SynthDef.new(sender, func).add;
+            s.sync;
+            Synth.new(sender).map(\val, bus);
+        }.fork;
 
-responder3 = "/distancefromsensor";
-oscFunc.value(matcher: appName ++ responder3, port: port,
-	func: {|msg|
-		//Respond to incoming message here!
-		(responder3 + "--> User ID: " ++ msg[1]).postln;
-		(responder3 + "--> Value: " ++ msg[2]).postln;
-	}
-);
+        //New OSC reciever feeding incoming values to conntrol bus
+        OSCFunc.newMatching(
+            path: ~appName ++ sender, recvPort: ~port,
+            func: { |msg|
+                var user = msg[1];
+                var value = msg[2];
+                bus.set(value);
+                (sender + "--> User: " ++ user).postln;
+                (sender + "--> Value: " ++ value).postln;
+            }
+        );
+    };
+
+    //Call synth factory for each sender
+    ~oscSynthFactory.value("/distancebetweenhands", {|val = 0|
+        Out.ar(0, SinOsc.ar(440, 0, val));
+    });
+
+    /*~oscSynthFactory.value("/handheightsavg", {|val = 0|
+        Out.ar(0, SinOsc.ar(440, 0, val));
+    });
+
+    ~oscSynthFactory.value("/distancefromsensor", {|val = 0|
+        Out.ar(0, SinOsc.ar(440, 0, val));
+    });*/
 )
