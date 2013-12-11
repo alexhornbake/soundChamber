@@ -36,16 +36,14 @@ void testApp::update()
 	device.update();
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
-		ofxNiTE2::User::Ref user = tracker.getUser(i);
+        ofxNiTE2::User::Ref user = tracker.getUser(i);
         
-        float distanceBetweenHands = getDistanceBetweenHands(user);
-        float handHeightsAvg = getHandHeightsAvg(user);
-        float distanceFromSensor = getDistanceFromSensor(user);
-        
-        sendOscMessage(i, "distancebetweenhands", distanceBetweenHands);
-        sendOscMessage(i, "handheightsavg", handHeightsAvg);
-        sendOscMessage(i, "distancefromsensor", distanceFromSensor);
-
+        if(user->getNumJoints() > 0)
+        {
+            sendOscMessage(i, "distancebetweenhands", getDistanceBetweenHands(user));
+            sendOscMessage(i, "handheightsavg", getHandHeightsAvg(user));
+            sendOscMessage(i, "distancefromsensor", getDistanceFromSensor(user));
+        }
     }
 }
 
@@ -56,7 +54,6 @@ void testApp::sendOscMessage(int id, string argName, float value){
     m.addFloatArg(value);
 	oscSender.sendMessage(m);
 }
-
 
 float testApp::getDistanceBetweenHands(ofxNiTE2::User::Ref user)
 {
@@ -95,7 +92,7 @@ float testApp::getDistanceFromSensor(ofxNiTE2::User::Ref user)
     float centerOfBoneZ = user->getCenterOfBone().z;
     centerOfBoneZ = ofMap(centerOfBoneZ,-700,-4000,0,1,true);
     
-    cout << "\n" << centerOfBoneZ;
+    //cout << "\n" << centerOfBoneZ;
     return centerOfBoneZ;
 }
 
