@@ -41,4 +41,5 @@ private:
 
     ofxOscSender oscSender;
     void sendOscMessage(int id, string argName, float value);
+    bool isUserDisplayable(ofxNiTE2::User::Ref user);
 };
