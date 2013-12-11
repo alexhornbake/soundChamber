@@ -37,15 +37,16 @@ void testApp::update()
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
+        int userId = user->getId();
 		
 		if(isUserDisplayable(user))
 		{
-			sendOscMessage(i, "distancebetweenhands", getDistanceBetweenHands(user));
-			sendOscMessage(i, "handheightsavg", getHandHeightsAvg(user));
-			sendOscMessage(i, "distancefromsensor", getDistanceFromSensor(user));
-			cout << i << " - Sending...\n";
+			sendOscMessage(userId, "distancebetweenhands", getDistanceBetweenHands(user));
+			sendOscMessage(userId, "handheightsavg", getHandHeightsAvg(user));
+			sendOscMessage(userId, "distancefromsensor", getDistanceFromSensor(user));
+			cout << userId << " - Sending...\n";
 		} else {
-			cout << i << " - NOTHING\n";
+			cout << userId << " - NOTHING\n";
 		}
 	}
 }
