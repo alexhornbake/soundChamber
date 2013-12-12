@@ -9,7 +9,7 @@ void testApp::setup()
 	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
 	ofBackground(0);
-	
+
 	//Setup OSC sender
 	oscSender.setup(HOST, PORT);
 	
@@ -131,6 +131,24 @@ bool testApp::isUserDisplayable(ofxNiTE2::User::Ref user)
 	return user->getNumJoints() > 0 && user->getJoint(nite::JOINT_TORSO).getPositionConfidence() > 0.3;
 }
 
+bool testApp::isClipPlayed(float maxRand)
+{
+   return (floor(ofRandom(maxRand)) == 0);
+}
+
+int testApp::randClipDuration(float maxRand)
+{
+    return floor(ofRandom(maxRand));
+}
+
+void testApp::maybePlayClip()
+{
+    if(isClipPlayed(30)){
+        ofSetColor(0,255,0);
+        ofRect(0,0,20,randClipDuration(200));
+    }
+}
+
 //--------------------------------------------------------------
 void testApp::draw()
 {
@@ -154,6 +172,8 @@ void testApp::draw()
 	}
 	tracker.getOverlayCamera().end();
 	ofPopView();
+
+    maybePlayClip();
 }
 
 //--------------------------------------------------------------

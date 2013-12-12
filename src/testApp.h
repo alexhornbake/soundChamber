@@ -43,6 +43,10 @@ private:
     float getDistanceFromSensor(ofxNiTE2::User::Ref user);
 
     ofxOscSender oscSender;
-	void sendOscMessage(int id, string argName, float value);
+    void sendOscMessage(int id, string argName, float value);
     bool isUserDisplayable(ofxNiTE2::User::Ref user);
+
+    void maybePlayClip();
+    bool isClipPlayed(float maxRand);
+    int  randClipDuration(float maxRand);
 };
