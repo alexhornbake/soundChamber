@@ -32,7 +32,9 @@
             var amp  = LinLin.kr(val2, 0, 1, 0, 1);
             var pan  = LinLin.kr(val3, 0, 1, -1,  1);
             var out  = Pan2.ar(SinOsc.ar(freq, 0, amp), pan);
-            Out.ar(0, out);
+            var env = Env([0.0, 0.8, 0.5, 0.5, 0.0], [1, 1, 1, 1]);
+
+            Out.ar(0, out * EnvGen.ar(env, doneAction: 1));
         }).add;
         s.sync;
     }.fork;
