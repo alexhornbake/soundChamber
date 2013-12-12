@@ -13,6 +13,7 @@
     Value 2: normalised value
 */
 (
+    //Global variables
     ~port = 57121;
     ~appName = "/soundchamber";
     ~debug = false;
@@ -24,9 +25,9 @@
     ~mappings.add("/handheightsavg"       -> \val2);
     ~mappings.add("/distancefromsensor"   -> \val3);
 
+    //Declare synth for assignment to each user
     {
         SynthDef.new(\soundChamber, { |val1, val2, val3|
-            //Go crazy and creative with your snyth def in here!!
             var freq = LinLin.kr(val1, 0, 1, 220, 440);
             var amp  = LinLin.kr(val2, 0, 1, 0, 1);
             var pan  = LinLin.kr(val3, 0, 1, -1,  1);
@@ -36,28 +37,30 @@
         s.sync;
     }.fork;
 
+    //Create OSC handlers for each of the mapped Kinect values
     ~mappings.keys.do({ |key|
-        ~createOSCHandler.value(key);
+        ~createOSCHandler.value(key, { |msg|
+            var userId = msg[1];
+            var val = msg[2];
+            var user = ~users.at(userId);
+
+            if(user == nil, {
+                ~users.add(userId -> ~createNewUser.value(userId));
+            }, {
+                user.at(\busses).at(key).set(val);
+                ~trace.value(key, userId, val);
+            });
+        });
     });
 
-    ~createOSCHandler = { |key|
+    //Reuse the same function to generate OSC handlers
+    ~createOSCHandler = { |key, func|
         OSCFunc.newMatching(
-            path: ~appName ++ key, recvPort: ~port,
-            func: { |msg|
-                var userId = msg[1];
-                var val = msg[2];
-                var user = ~users.at(userId);
-
-                if(user == nil, {
-                    ~createNewUser.value(userId);
-                }, {
-                    user.at(\busses).at(key).set(val);
-                    ~trace.value(key, userId, val);
-                });
-            }
+            path: ~appName ++ key, recvPort: ~port, func: func
         );
     };
 
+    //Build new user -> synth -> bus dictionary tree
     ~createNewUser = { |userId|
         var synth = Synth.new(\soundChamber);
         var busses = Dictionary.new;
@@ -71,9 +74,10 @@
 
         user.add(\synth -> synth);
         user.add(\busses -> busses);
-        ~users.add(userId -> user);
+        user;
     };
 
+    //Output debug messages
     ~trace = { |key, userId, val|
         if(~debug, {
             (key + "--> User: " ++ userId).postln;
