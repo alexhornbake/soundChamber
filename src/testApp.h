@@ -6,6 +6,7 @@
 #include "ofxNiTE2.h"
 
 #include "ofxOsc.h"
+#include "KillUser.h"
 
 #define HOST "localhost"
 #define PORT 57121
@@ -32,6 +33,8 @@ public:
 	
 	ofxNI2::Device device;
 	ofxNiTE2::UserTracker tracker;
+	vector<int> prevFrameUsers;
+	vector<int> currFrameUsers;
 
 private:
     
@@ -40,6 +43,6 @@ private:
     float getDistanceFromSensor(ofxNiTE2::User::Ref user);
 
     ofxOscSender oscSender;
-    void sendOscMessage(int id, string argName, float value);
+	void sendOscMessage(int id, string argName, float value);
     bool isUserDisplayable(ofxNiTE2::User::Ref user);
 };

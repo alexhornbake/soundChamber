@@ -16,7 +16,7 @@
     //Global variables
     ~port = 57121;
     ~appName = "/soundchamber";
-    ~debug = false;
+    ~debug = true;
 
     ~users = Dictionary.new;
 
@@ -24,18 +24,20 @@
     ~mappings.add("/distancebetweenhands" -> \val1);
     ~mappings.add("/handheightsavg"       -> \val2);
     ~mappings.add("/distancefromsensor"   -> \val3);
+    ~mappings.add("/lostuser"             -> \gate);
 
     //Declare synth definitions
     {
         //Synth for one instance per each user
-        SynthDef.new(\soundChamber, { |val1, val2, val3|
+        SynthDef.new(\soundChamber, { |val1, val2, val3, gate|
+
             var freq = LinLin.kr(val1, 0, 1, 220, 440);
             var amp  = LinLin.kr(val2, 0, 1, 0, 1);
-            var pan  = LinLin.kr(val3, 0, 1, -1,  1);
+            var pan  = LinLin.kr(val3, 0, 1, -1, 1);
             var out  = Pan2.ar(SinOsc.ar(freq, 0, amp), pan);
-            var env = Env([0.0, 0.8, 0.5, 0.5, 0.0], [1, 1, 1, 1]);
+            var env  = Env.asr(0.3, 1, 0.3);
 
-            Out.ar(0, out * EnvGen.ar(env, doneAction: 1));
+            Out.ar(0, out * EnvGen.ar(env, gate: gate, doneAction: 2));
         }).add;
 
         //Synth for one instance period - static on/off
@@ -60,12 +62,20 @@
             var val = msg[2];
             var user = ~users.at(userId);
 
-            if(user == nil, {
-                ~users.add(userId -> ~createNewUser.value(userId));
+            if(key == "/lostuser", {
+			    if(user != nil, {
+                    user.at(\busses).at(key).setSynchronous(0);
+                    ~users.removeAt(userId);
+                    ~trace.value(key, userId, val);
+			    });
             }, {
-                user.at(\busses).at(key).set(val);
-                ~trace.value(key, userId, val);
-            });
+                if(user == nil, {
+                    ~users.add(userId -> ~createNewUser.value(userId));
+                }, {
+                    user.at(\busses).at(key).set(val);
+                    ~trace.value(key, userId, val);
+                });
+		    });
         });
     });
 
@@ -75,7 +85,7 @@
         if(command == 1, {
             ~staticBus.set(exprand(0.2, 0.5));
         }, {
-			~staticBus.set(0);
+            ~staticBus.set(0);
         });
     });
 
@@ -95,6 +105,7 @@
         var keys = ~mappings.keys;
         keys.do({ |key|
             busses.add(key -> Bus.control(s));
+            busses.at(key).setSynchronous(1);
             synth.map(~mappings.at(key), busses.at(key));
         });
 

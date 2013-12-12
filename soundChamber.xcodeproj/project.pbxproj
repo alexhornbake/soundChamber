@@ -29,6 +29,7 @@
 		91082B1218540BFF0083487F /* ofxOscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91082B0218540BFF0083487F /* ofxOscReceiver.cpp */; };
 		91082B1318540BFF0083487F /* ofxOscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91082B0418540BFF0083487F /* ofxOscSender.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
+		D60829811859A0EA00882C07 /* KillUser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D60829801859A0EA00882C07 /* KillUser.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
 		E45BE97C0E8CC7DD009D7055 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9720E8CC7DD009D7055 /* ApplicationServices.framework */; };
@@ -159,6 +160,8 @@
 		91082B0418540BFF0083487F /* ofxOscSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOscSender.cpp; sourceTree = "<group>"; };
 		91082B0518540BFF0083487F /* ofxOscSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOscSender.h; sourceTree = "<group>"; };
 		BBAB23BE13894E4700AA2426 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../libs/glut/lib/osx/GLUT.framework; sourceTree = "<group>"; };
+		D608297F1859A0EA00882C07 /* KillUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KillUser.h; sourceTree = "<group>"; };
+		D60829801859A0EA00882C07 /* KillUser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KillUser.cpp; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E45BE9710E8CC7DD009D7055 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		E45BE9720E8CC7DD009D7055 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -609,6 +612,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
+				D608297F1859A0EA00882C07 /* KillUser.h */,
+				D60829801859A0EA00882C07 /* KillUser.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -723,6 +728,7 @@
 				91082B1118540BFF0083487F /* ofxOscParameterSync.cpp in Sources */,
 				91082B1218540BFF0083487F /* ofxOscReceiver.cpp in Sources */,
 				91082B1318540BFF0083487F /* ofxOscSender.cpp in Sources */,
+				D60829811859A0EA00882C07 /* KillUser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

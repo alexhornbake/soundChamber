@@ -34,13 +34,19 @@ void testApp::exit()
 void testApp::update()
 {
 	device.update();
+	if(ofGetFrameNum() > 1){
+		prevFrameUsers = currFrameUsers;
+		currFrameUsers.clear();
+	}
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
-        int userId = user->getId();
+		int userId = user->getId();
 		
 		if(isUserDisplayable(user))
 		{
+			currFrameUsers.push_back(userId);
+			
 			sendOscMessage(userId, "distancebetweenhands", getDistanceBetweenHands(user));
 			sendOscMessage(userId, "handheightsavg", getHandHeightsAvg(user));
 			sendOscMessage(userId, "distancefromsensor", getDistanceFromSensor(user));
@@ -49,14 +55,34 @@ void testApp::update()
 			cout << userId << " - NOTHING\n";
 		}
 	}
+	
+	for (int i = 0; i < prevFrameUsers.size(); i++)
+	{
+		int prevUserId = prevFrameUsers.at(i);
+		
+		if(std::find(currFrameUsers.begin(), currFrameUsers.end(), prevUserId) == currFrameUsers.end())
+		{
+			//KillUser thread(prevUserId);
+			//thread.startThread(true,false);
+			//for(int i = 0; i <= 5; i++) {
+			ofSleepMillis(100);
+			sendOscMessage(prevUserId, "lostuser", 0);
+			sendOscMessage(prevUserId, "lostuser", 0);
+			ofSleepMillis(100);
+			sendOscMessage(prevUserId, "lostuser", 0);
+			sendOscMessage(prevUserId, "lostuser", 0);
+			//}
+			cout << "KILLS USER ID " << prevUserId << "\n";
+		}
+	}
 }
 
 void testApp::sendOscMessage(int id, string argName, float value){
-	ofxOscMessage m;
-	m.setAddress(ofToString(MSG_PREFIX) + "/" +  argName);
-	m.addIntArg(id);
-	m.addFloatArg(value);
-	oscSender.sendMessage(m);
+	ofxOscMessage message;
+	message.addIntArg(id);
+	message.addFloatArg(value);
+	message.setAddress(ofToString(MSG_PREFIX) + "/" +  argName);
+	oscSender.sendMessage(message);
 }
 
 float testApp::getDistanceBetweenHands(ofxNiTE2::User::Ref user)
