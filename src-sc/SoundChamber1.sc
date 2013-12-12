@@ -41,7 +41,6 @@
     });
 
     ~createOSCHandler = { |key|
-        (~appName ++ key).postln;
         OSCFunc.newMatching(
             path: ~appName ++ key, recvPort: ~port,
             func: { |msg|
