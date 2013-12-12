@@ -25,8 +25,9 @@
     ~mappings.add("/handheightsavg"       -> \val2);
     ~mappings.add("/distancefromsensor"   -> \val3);
 
-    //Declare synth for assignment to each user
+    //Declare synth definitions
     {
+        //Synth for one instance per each user
         SynthDef.new(\soundChamber, { |val1, val2, val3|
             var freq = LinLin.kr(val1, 0, 1, 220, 440);
             var amp  = LinLin.kr(val2, 0, 1, 0, 1);
@@ -36,8 +37,21 @@
 
             Out.ar(0, out * EnvGen.ar(env, doneAction: 1));
         }).add;
+
+        //Synth for one instance period - static on/off
+        SynthDef.new(\static, { |mul|
+            var out = PinkNoise.ar(mul);
+            Out.ar(0, out);
+        }).add;
+
+        //Ensure server has loaded the definitions
         s.sync;
     }.fork;
+
+    //Create a static synth instance
+    ~staticBus = Bus.control(s);
+    ~staticSynth = Synth.new(\static);
+    ~staticSynth.map(\mul, ~staticBus);
 
     //Create OSC handlers for each of the mapped Kinect values
     ~mappings.keys.do({ |key|
@@ -52,6 +66,16 @@
                 user.at(\busses).at(key).set(val);
                 ~trace.value(key, userId, val);
             });
+        });
+    });
+
+    //Create an OSC handler for receiving static on/off messages
+    ~createOSCHandler.value("/static", { |msg|
+        var command = msg[1];
+        if(command == 1, {
+            ~staticBus.set(exprand(0.2, 0.5));
+        }, {
+			~staticBus.set(0);
         });
     });
 
