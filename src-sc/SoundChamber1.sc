@@ -26,9 +26,28 @@
     ~mappings.add("/distancefromsensor"   -> \val3);
     ~mappings.add("/lostuser"             -> \gate);
 
+    ~synthIterator = 0;
+    ~synthDefs = [\bassChopper, \brownAndDust];
+
     //Declare synth definitions
     {
-        //Synth for one instance per each user
+        //Synths for one instance per each user
+        SynthDef.new(\bassChopper, { |val1, val2, val3, gate|
+
+            var freq  = LinLin.kr(val3, 0, 1, 40, 80);
+            var freq2 = LinLin.kr(val3, 0, 1, 100, 200);
+            var amp   = LFPulse.kr(LinLin.kr(val1, 0, 1, 12, 1), 0.5, 0.5);
+            var env   = Env.asr(0.3, 1, 0.3);
+
+            var out = Pan2.ar(
+                        (PMOsc.ar(freq) +
+                        (SyncSaw.ar(freq2)*0.05) +
+                        (BrownNoise.ar()*0.06))
+                        * amp, 0);
+
+            Out.ar(0, val2 * out * EnvGen.ar(env, gate: gate, doneAction: 2));
+        }).add;
+
         SynthDef.new(\brownAndDust, { |val1, val2, val3, gate|
 
             var brown = (
@@ -42,23 +61,23 @@
             ) * 8;
 
             var dust = 0.5 * (
-		        Decay.ar(
+                Decay.ar(
                     GVerb.ar(
                         Mix.ar(
                             Dust.ar(
-            			        {
-            				        LinExp.kr(val1, 0, 1, 8, 0.5)
+                                {
+                                    LinExp.kr(val1, 0, 1, 8, 0.5)
                                 } !9,
                                 0.75
                             ).ring3(
                                 SinOsc.ar({rrand(30.1 ,66)}!5) ** Blip.ar(77.3)
                             )
                         ),
-			            revtime: 6,
+                        revtime: 6,
                         spread: 4
                     ).tanh,
                     decayTime: 0.001
-		        )
+                )
             );
 
             var out  = Mix.new([dust, brown]) * val2;
@@ -90,11 +109,11 @@
             var user = ~users.at(userId);
 
             if(key == "/lostuser", {
-			    if(user != nil, {
+                if(user != nil, {
                     user.at(\busses).at(key).setSynchronous(0);
                     ~users.removeAt(userId);
                     ~trace.value(key, userId, val);
-			    });
+                });
             }, {
                 if(user == nil, {
                     ~users.add(userId -> ~createNewUser.value(userId));
@@ -102,7 +121,7 @@
                     user.at(\busses).at(key).set(val);
                     ~trace.value(key, userId, val);
                 });
-		    });
+            });
         });
     });
 
@@ -125,7 +144,7 @@
 
     //Build new user -> synth -> bus dictionary tree
     ~createNewUser = { |userId|
-        var synth = Synth.new(\soundChamber);
+        var synth = Synth.new(~synthDefs.at(~synthIterator));
         var busses = Dictionary.new;
         var user = Dictionary.new;
 
@@ -138,6 +157,13 @@
 
         user.add(\synth -> synth);
         user.add(\busses -> busses);
+
+        //Reset iterator
+        ~synthIterator = ~synthIterator + 1;
+        if(~synthIterator >= ~synthDefs.size, {
+            ~synthIterator = 0;
+        });
+
         user;
     };
 
