@@ -45,7 +45,7 @@
                         (BrownNoise.ar()*0.06))
                         * amp, 0);
 
-            Out.ar(0, val2 * out * EnvGen.ar(env, gate: gate, doneAction: 2));
+            Out.ar(0, 0.5 * val2 * out * EnvGen.ar(env, gate: gate, doneAction: 2));
         }).add;
 
         SynthDef.new(\brownAndDust, { |val1, val2, val3, gate|
@@ -54,7 +54,7 @@
                 Splay.ar(
                     Resonz.ar(
                         BrownNoise.ar,
-                        { LinLin.kr(val3, 0, 1, 120, 50) } !5,
+                        { LinLin.kr(val3, 0, 1, 400, 300) } !5,
                         0.01
                     )
                 ).distort
@@ -80,7 +80,10 @@
                 )
             );
 
-            var out  = Mix.new([dust, brown]) * val2;
+		    var freq2 = LinLin.kr(val3, 0, 1, 400, 1000);
+		    var higher = Saw.ar(freq2)*0.1;
+
+		    var out  = MoogFF.ar(Mix.new([dust, brown, higher]) * val2, val1*2000 + 100);
             var env  = Env.asr(0.3, 1, 0.3);
 
             Out.ar(0, out * EnvGen.ar(env, gate: gate, doneAction: 2));
@@ -89,7 +92,7 @@
         //Synth for one instance period - static on/off
         SynthDef.new(\static, { |mul|
             var out = PinkNoise.ar(mul);
-            Out.ar(0, out);
+            Out.ar(0, out !2);
         }).add;
 
         //Ensure server has loaded the definitions
@@ -129,7 +132,7 @@
     ~createOSCHandler.value("/static", { |msg|
         var command = msg[1];
         if(command == 1, {
-            ~staticBus.set(exprand(0.2, 0.5));
+            ~staticBus.set(exprand(0.05, 0.1));
         }, {
             ~staticBus.set(0);
         });
