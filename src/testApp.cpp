@@ -9,6 +9,8 @@ void testApp::setup()
 	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
 	ofBackground(0);
+    screenWidth  = ofGetWidth();
+    screenHeight = ofGetHeight();
 
     //Load Video Clip of Static
     clipPlayer.loadMovie(ofToDataPath("../../assets/bad_reception.mov",true));
@@ -148,7 +150,7 @@ void testApp::maybePlayClip()
         }
     }
     else {
-        clipPlayer.draw(0,0);
+        clipPlayer.draw(0, 0, screenWidth, screenHeight);
         if(randomInteger(30)){
             clipPlayer.stop();
         }
@@ -168,11 +170,11 @@ void testApp::draw()
 	depth_image.setFromPixels(tracker.getPixelsRef(1000, 4000));
 	
 	ofSetColor(255,255,255,127);
-	depth_image.draw(0, 0);
+	depth_image.draw(0, 0, screenWidth, screenHeight);
 	
 	// draw in 2D
 	ofPushView();
-	tracker.getOverlayCamera().begin(ofRectangle(0, 0, depth_image.getWidth(), depth_image.getHeight()));
+	tracker.getOverlayCamera().begin(ofRectangle(0, 0, screenWidth, screenHeight));
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);

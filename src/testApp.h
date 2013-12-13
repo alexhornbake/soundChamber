@@ -37,6 +37,8 @@ public:
 	vector<int> currFrameUsers;
 
     ofVideoPlayer clipPlayer;
+    int screenWidth;
+    int screenHeight;
 
 private:
     
