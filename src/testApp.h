@@ -37,6 +37,9 @@ public:
 	vector<int> currFrameUsers;
 
     ofVideoPlayer clipPlayer;
+    int clipLowOpacity;
+    int clipHighOpactiy;
+    int clipOpacity;
     int screenWidth;
     int screenHeight;
 
@@ -50,6 +53,6 @@ private:
     void sendOscMessage(int id, string argName, float value);
     bool isUserDisplayable(ofxNiTE2::User::Ref user);
 
-    void maybePlayClip();
+    void drawJaggedClip();
     bool randomInteger(float maxRand);
 };

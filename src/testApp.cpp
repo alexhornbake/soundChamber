@@ -14,6 +14,10 @@ void testApp::setup()
 
     //Load Video Clip of Static
     clipPlayer.loadMovie(ofToDataPath("../../assets/bad_reception.mov",true));
+    clipLowOpacity = 50;
+    clipHighOpactiy = 255;
+    clipOpacity = clipLowOpacity;
+    clipPlayer.play();
 
 	//Setup OSC sender
 	oscSender.setup(HOST, PORT);
@@ -142,29 +146,28 @@ bool testApp::randomInteger(float maxRand)
    return (floor(ofRandom(maxRand)) == 0);
 }
 
-void testApp::maybePlayClip()
+void testApp::drawJaggedClip()
 {
-    if(!clipPlayer.isPlaying()){
-        if(randomInteger(30)){
-            clipPlayer.play();
+    if(randomInteger(30)){
+        if(clipOpacity != clipHighOpactiy){
+            clipOpacity = clipHighOpactiy;
+        }else{
+            clipOpacity = clipLowOpacity;
         }
     }
-    else {
-        clipPlayer.draw(0, 0, screenWidth, screenHeight);
-        if(randomInteger(30)){
-            clipPlayer.stop();
-        }
-    }
+
+    ofSetColor(255, 255, 255, clipOpacity);
+    clipPlayer.draw(0, 0, screenWidth, screenHeight);
 }
 
 //--------------------------------------------------------------
 void testApp::draw()
 {
-    //static movie clip
-    maybePlayClip();
-
     ofEnableAlphaBlending();
     ofEnableBlendMode(OF_BLENDMODE_ADD);
+
+    //static movie clip
+    drawJaggedClip();
 
 	// draw depth
 	depth_image.setFromPixels(tracker.getPixelsRef(1000, 4000));
