@@ -10,11 +10,14 @@ void testApp::setup()
 	ofSetVerticalSync(true);
 	ofBackground(0);
 
+    //Load Video Clip of Static
+    clipPlayer.loadMovie(ofToDataPath("../../assets/bad_reception.mov",true));
+
 	//Setup OSC sender
 	oscSender.setup(HOST, PORT);
 	
 	//Setup Kinect
-	device.setup();
+        device.setup();
 	
 	if (tracker.setup(device))
 	{
@@ -33,7 +36,8 @@ void testApp::exit()
 //--------------------------------------------------------------
 void testApp::update()
 {
-	device.update();
+    clipPlayer.update();
+    device.update();
 	if(ofGetFrameNum() > 1){
 		prevFrameUsers = currFrameUsers;
 		currFrameUsers.clear();
@@ -131,21 +135,23 @@ bool testApp::isUserDisplayable(ofxNiTE2::User::Ref user)
 	return user->getNumJoints() > 0 && user->getJoint(nite::JOINT_TORSO).getPositionConfidence() > 0.3;
 }
 
-bool testApp::isClipPlayed(float maxRand)
+bool testApp::randomInteger(float maxRand)
 {
    return (floor(ofRandom(maxRand)) == 0);
 }
 
-int testApp::randClipDuration(float maxRand)
-{
-    return floor(ofRandom(maxRand));
-}
-
 void testApp::maybePlayClip()
 {
-    if(isClipPlayed(30)){
-        ofSetColor(0,255,0);
-        ofRect(0,0,20,randClipDuration(200));
+    if(!clipPlayer.isPlaying()){
+        if(randomInteger(30)){
+            clipPlayer.play();
+        }
+    }
+    else {
+        clipPlayer.draw(200,200);
+        if(randomInteger(30)){
+            clipPlayer.stop();
+        }
     }
 }
 

@@ -36,6 +36,8 @@ public:
 	vector<int> prevFrameUsers;
 	vector<int> currFrameUsers;
 
+    ofVideoPlayer clipPlayer;
+
 private:
     
     float getDistanceBetweenHands(ofxNiTE2::User::Ref user);
@@ -47,6 +49,5 @@ private:
     bool isUserDisplayable(ofxNiTE2::User::Ref user);
 
     void maybePlayClip();
-    bool isClipPlayed(float maxRand);
-    int  randClipDuration(float maxRand);
+    bool randomInteger(float maxRand);
 };
