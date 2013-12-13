@@ -1,11 +1,10 @@
 (
         //Synth for one instance per each user
-        SynthDef.new(\soundChamber, { |val1, val2, val3, gate|
-
-            val1 = MouseX.kr(0, 1);
-            val2 = MouseY.kr(0, 1);
-            val3 = SinOsc(0.5, 0, 0.5, 0.5);
-            gate = 1;
+        SynthDef.new(\soundChamber, {
+	        var val1 = MouseX.kr(0, 1);
+            var val2 = MouseY.kr(0, 1);
+            var val3 = SinOsc(0.5, 0, 0.5, 0.5);
+            var gate = 1;
 
             var freq = LinLin.kr(val1, 0, 1, 220, 440);
             var amp  = LinLin.kr(val2, 0, 1, 0, 1);
