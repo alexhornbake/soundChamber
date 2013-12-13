@@ -43,6 +43,7 @@ void testApp::exit()
 void testApp::update()
 {
     clipPlayer.update();
+    updateJaggedClip();
     device.update();
 	if(ofGetFrameNum() > 1){
 		prevFrameUsers = currFrameUsers;
@@ -95,6 +96,13 @@ void testApp::sendOscMessage(int id, string argName, float value){
 	oscSender.sendMessage(message);
 }
 
+void testApp::sendOscMessage(string argName, float value){
+	ofxOscMessage message;
+	message.addFloatArg(value);
+	message.setAddress(ofToString(MSG_PREFIX) + "/" +  argName);
+	oscSender.sendMessage(message);
+}
+
 float testApp::getDistanceBetweenHands(ofxNiTE2::User::Ref user)
 {
 	const ofxNiTE2::Joint &leftHand  = user->getJoint(nite::JOINT_LEFT_HAND);
@@ -141,23 +149,50 @@ bool testApp::isUserDisplayable(ofxNiTE2::User::Ref user)
 	return user->getNumJoints() > 0 && user->getJoint(nite::JOINT_TORSO).getPositionConfidence() > 0.3;
 }
 
-bool testApp::randomInteger(float maxRand)
+bool testApp::randomBool(float maxRand)
 {
    return (floor(ofRandom(maxRand)) == 0);
 }
 
-void testApp::drawJaggedClip()
+void testApp::updateJaggedClip()
 {
-    if(randomInteger(30)){
-        if(clipOpacity != clipHighOpactiy){
+    if(randomBool(30)){
+        if(isClipLow()){
             clipOpacity = clipHighOpactiy;
+            sendOscMessage("static", 1);
+            sendOscMessage("static", 1);
         }else{
             clipOpacity = clipLowOpacity;
+            sendOscMessage("static", 0);
+            sendOscMessage("static", 0);
         }
     }
+}
 
+bool testApp::isClipLow()
+{
+    if(clipOpacity == clipLowOpacity)
+        return true;
+    return false;
+}
+
+void testApp::drawJaggedClip()
+{
     ofSetColor(255, 255, 255, clipOpacity);
-    clipPlayer.draw(0, 0, screenWidth, screenHeight);
+    if(isClipLow()){
+        drawClipFlipped();
+    }else {
+        clipPlayer.draw(0, 0, screenWidth, screenHeight);
+    }
+}
+
+void testApp::drawClipFlipped()
+{
+    ofPushMatrix();
+        ofTranslate(screenWidth, screenHeight);
+        ofRotateZ(180);
+        clipPlayer.draw(0, 0, screenWidth, screenHeight);
+    ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -172,12 +207,13 @@ void testApp::draw()
 	// draw depth
 	depth_image.setFromPixels(tracker.getPixelsRef(1000, 4000));
 	
-	ofSetColor(255,255,255,127);
-	depth_image.draw(0, 0, screenWidth, screenHeight);
+	ofSetColor(255,225,225,127);
+    int depthImgOffset = 75;
+	depth_image.draw(0 - depthImgOffset, 0 - depthImgOffset, screenWidth + depthImgOffset*2, screenHeight + depthImgOffset*2);
 	
 	// draw in 2D
 	ofPushView();
-	tracker.getOverlayCamera().begin(ofRectangle(0, 0, screenWidth, screenHeight));
+	tracker.getOverlayCamera().begin(ofRectangle(0 - depthImgOffset, 0 - depthImgOffset, screenWidth + depthImgOffset*2, screenHeight + depthImgOffset*2));
 	for (int i = 0; i < tracker.getNumUser(); i++)
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);

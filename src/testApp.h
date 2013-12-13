@@ -37,11 +37,6 @@ public:
 	vector<int> currFrameUsers;
 
     ofVideoPlayer clipPlayer;
-    int clipLowOpacity;
-    int clipHighOpactiy;
-    int clipOpacity;
-    int screenWidth;
-    int screenHeight;
 
 private:
     
@@ -51,8 +46,19 @@ private:
 
     ofxOscSender oscSender;
     void sendOscMessage(int id, string argName, float value);
+    void sendOscMessage(string argName, float value);
     bool isUserDisplayable(ofxNiTE2::User::Ref user);
 
+    void updateJaggedClip();
     void drawJaggedClip();
-    bool randomInteger(float maxRand);
+    void drawClipFlipped();
+    bool randomBool(float maxRand);
+    bool isClipLow();
+    
+    bool isClipFlipped;
+    int  clipLowOpacity;
+    int  clipHighOpactiy;
+    int  clipOpacity;
+    int  screenWidth;
+    int  screenHeight;
 };
