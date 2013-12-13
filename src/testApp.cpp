@@ -148,7 +148,7 @@ void testApp::maybePlayClip()
         }
     }
     else {
-        clipPlayer.draw(200,200);
+        clipPlayer.draw(0,0);
         if(randomInteger(30)){
             clipPlayer.stop();
         }
@@ -158,10 +158,16 @@ void testApp::maybePlayClip()
 //--------------------------------------------------------------
 void testApp::draw()
 {
+    //static movie clip
+    maybePlayClip();
+
+    ofEnableAlphaBlending();
+    ofEnableBlendMode(OF_BLENDMODE_ADD);
+
 	// draw depth
 	depth_image.setFromPixels(tracker.getPixelsRef(1000, 4000));
 	
-	ofSetColor(255);
+	ofSetColor(255,255,255,127);
 	depth_image.draw(0, 0);
 	
 	// draw in 2D
@@ -178,8 +184,7 @@ void testApp::draw()
 	}
 	tracker.getOverlayCamera().end();
 	ofPopView();
-
-    maybePlayClip();
+    ofDisableAlphaBlending();
 }
 
 //--------------------------------------------------------------
