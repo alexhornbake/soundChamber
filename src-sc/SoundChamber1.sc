@@ -16,7 +16,7 @@
     //Global variables
     ~port = 57121;
     ~appName = "/soundchamber";
-    ~debug = true;
+    ~debug = false;
 
     ~users = Dictionary.new;
 
@@ -45,7 +45,7 @@
                         (BrownNoise.ar()*0.06))
                         * amp, 0);
 
-            Out.ar(0, 0.5 * val2 * out * EnvGen.ar(env, gate: gate, doneAction: 2));
+            Out.ar(0, 0.32 * val2 * out * EnvGen.ar(env, gate: gate, doneAction: 2));
         }).add;
 
         SynthDef.new(\brownAndDust, { |val1, val2, val3, gate|
@@ -132,7 +132,7 @@
     ~createOSCHandler.value("/static", { |msg|
         var command = msg[1];
         if(command == 1, {
-            ~staticBus.set(exprand(0.05, 0.1));
+            ~staticBus.set(exprand(0.01, 0.02));
         }, {
             ~staticBus.set(0);
         });

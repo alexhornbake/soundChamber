@@ -54,7 +54,7 @@ void testApp::update()
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
 		int userId = user->getId();
 		
-		if(isUserDisplayable(user))
+		if(isUserDisplayable(user) && i < 2)
 		{
 			currFrameUsers.push_back(userId);
 			
@@ -218,7 +218,7 @@ void testApp::draw()
 	{
 		ofxNiTE2::User::Ref user = tracker.getUser(i);
 		
-		if(isUserDisplayable(user))
+		if(isUserDisplayable(user) && i < 2)
 		{
 			user->draw();
 		}
