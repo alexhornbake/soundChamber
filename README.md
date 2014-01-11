@@ -16,3 +16,8 @@ A full-body interface for interacting with synthesized sound. Uses a blend of [o
 - You should see a depth map in the oF window
 - Move around in front of the sensor until a skeleton overlay appears
 - You should now hear sound and be able to control it by moving around!
+
+### Problems?
+- We had problems with OpenNI on Mavericks - however it works fine on previous OSX versions
+- If you are encountering memory allocation errors, try reseating the Kinect
+- We sometimes had intermittent memory allocation errors beyond this. Not sure of the source, but re-compiling and running a few times gets past it
